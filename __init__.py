@@ -3,6 +3,7 @@ import requests
 from ovos_bus_client.message import Message
 from ovos_workshop.skills import OVOSSkill
 from ovos_workshop.decorators import intent_handler, skill_api_method
+import os
 
 
 class BootFinishedSkill(OVOSSkill):
@@ -131,8 +132,18 @@ class BootFinishedSkill(OVOSSkill):
                 if user_code.lower().replace(".", "") == entrance_code:
                     self.speak_dialog("valid_code", data={"user": user})
                     self.active_user = user
-                    self.voice_on()
-                    self.connect_to_spotify()
+                    try:
+                        self.voice_on()
+                    except:
+                        self.speak_dialog("Could not turn on the voice changer")
+                    try:
+                        self.phone_on()
+                    except:
+                        print("Could not turn on the phone")
+                    try:
+                        self.connect_to_spotify()
+                    except:
+                        print("Could not connect to Spotify")
                     return
             if not self.active_user:
                 self.speak_dialog("wrong_code", data={"code": user_code})
@@ -142,7 +153,13 @@ class BootFinishedSkill(OVOSSkill):
             self.speak_dialog("shutdown")
             self.bus.emit(Message("system.shutdown"))
             self.attempts = 1
-
+    def phone_on(self):
+        try:
+            self.speak_dialog("Turning on the phone.")  # Vocal response for starting the phone
+            os.system("bash /home/ovos/phone-scripts/phone-restart")
+        except:
+            self.speak_dialog("Could not turn on the phone")
+                                     
     def connect_to_spotify(self):
         self.speak_dialog("spotify_connecting")
         with subprocess.Popen(
@@ -173,9 +190,15 @@ class BootFinishedSkill(OVOSSkill):
                 self.log.error(err.strip())
                 
     def voice_on(self):
-        self.speak_dialog("Turning on the voice changer.")  # Vocal response for starting the voice changer
-        requests.get("http://192.168.0.238:8000/start")
-        self.speak_dialog("Voice changer on.")
+        try:
+            self.speak_dialog("Turning on the voice changer.")  # Vocal response for starting the voice changer
+            response = requests.post("http://192.168.0.238:8000/start")
+            message = response.json()
+            self.speak_dialog(message["message"])
+        except:
+            raise Exception("Could not turn on the voice changer")
+ 
+        
     
     def shutdown(self):
         """
