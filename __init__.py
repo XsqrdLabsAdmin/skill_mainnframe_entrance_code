@@ -133,13 +133,14 @@ class BootFinishedSkill(OVOSSkill):
                     self.speak_dialog("valid_code", data={"user": user})
                     self.active_user = user
                     try:
-                        self.voice_on()
-                    except:
-                        self.speak_dialog("Could not turn on the voice changer")
-                    try:
                         self.phone_on()
                     except:
                         print("Could not turn on the phone")
+                    try:
+                        self.voice_on()
+                    except:
+                        self.speak_dialog("Could not turn on the voice changer")
+                    
                     try:
                         self.connect_to_spotify()
                     except:
