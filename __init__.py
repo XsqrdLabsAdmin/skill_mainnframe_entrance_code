@@ -195,19 +195,12 @@ class BootFinishedSkill(OVOSSkill):
             self.speak_dialog("Turning on the voice changer.")  # Vocal response for starting the voice changer
             response = requests.post("http://192.168.0.238:8000/start", timeout=3)
             response.raise_for_status()
+
             message = response.json()
             self.speak_dialog(message["message"])
         except:
             raise Exception("Could not turn on the voice changer")
- 
-        
-    def shutdown(self):
-        """
-        Override shutdown to reset skill state or save data if necessary
-        """
-        self.active_user = ""
-        super().shutdown()
-    
+
     @intent_handler("shutdown.intent")
     def handle_shutdown(self, message: Message):
         """
