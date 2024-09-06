@@ -1,5 +1,5 @@
 import subprocess
-import requests 
+import requests
 from ovos_bus_client.message import Message
 from ovos_workshop.skills import OVOSSkill
 from ovos_workshop.decorators import intent_handler, skill_api_method
@@ -82,10 +82,10 @@ class BootFinishedSkill(OVOSSkill):
         if self.active_user != self.admin_user:
             self.speak_dialog("admin_only")
             return
-        
+
         user = self.get_response("What is the name of the user?")
         entrance_code = self.get_response("Dictate a pass code please.")
-        
+
         if user and entrance_code:
             self.settings["entrance_codes"][user] = entrance_code
             self.speak_dialog("user_added", {"user": user})
@@ -100,7 +100,7 @@ class BootFinishedSkill(OVOSSkill):
         if self.active_user != self.admin_user:
             self.speak_dialog("admin_only")
             return
-        
+
         user = self.get_response("get_user_name_to_remove")
 
         if user in self.entrance_codes:
@@ -140,7 +140,7 @@ class BootFinishedSkill(OVOSSkill):
                         self.voice_on()
                     except:
                         self.speak_dialog("Could not turn on the voice changer")
-                    
+
                     try:
                         self.connect_to_spotify()
                     except:
@@ -154,13 +154,16 @@ class BootFinishedSkill(OVOSSkill):
             self.speak_dialog("shutdown")
             self.bus.emit(Message("system.shutdown"))
             self.attempts = 1
+
     def phone_on(self):
         try:
-            self.speak_dialog("Turning on the phone.")  # Vocal response for starting the phone
+            self.speak_dialog(
+                "Turning on the phone."
+            )  # Vocal response for starting the phone
             os.system("bash /home/ovos/phone-scripts/phone-restart")
         except:
             self.speak_dialog("Could not turn on the phone")
-                                     
+
     def connect_to_spotify(self):
         self.speak_dialog("spotify_connecting")
         with subprocess.Popen(
@@ -189,10 +192,12 @@ class BootFinishedSkill(OVOSSkill):
                 self.log.info(out.strip())
             if err:
                 self.log.error(err.strip())
-                
+
     def voice_on(self):
         try:
-            self.speak_dialog("Turning on the voice changer.")  # Vocal response for starting the voice changer
+            self.speak_dialog(
+                "Turning on the voice changer."
+            )  # Vocal response for starting the voice changer
             response = requests.post("http://192.168.0.238:8000/start", timeout=3)
             response.raise_for_status()
 
