@@ -4,6 +4,7 @@ from ovos_bus_client.message import Message
 from ovos_workshop.skills import OVOSSkill
 from ovos_workshop.decorators import intent_handler, skill_api_method
 import os
+from time import sleep
 
 
 class BootFinishedSkill(OVOSSkill):
@@ -73,56 +74,6 @@ class BootFinishedSkill(OVOSSkill):
         """
         self.settings["speak_ready"] = False
         self.speak_dialog("confirm_no_speak_ready")
-
-    @intent_handler("add_user.intent")
-    def handle_add_user(self, message: Message):
-        """
-        Handle adding a new user with an entrance code, only if the active user is the admin
-        """
-        if self.active_user != self.admin_user:
-            self.speak_dialog("admin_only")
-            return
-
-        user = self.get_response("What is the name of the user?")
-        entrance_code = self.get_response("Dictate a pass code please.")
-
-        if user and entrance_code:
-            self.settings["entrance_codes"][user] = entrance_code
-            self.speak_dialog("user_added", {"user": user})
-        else:
-            self.speak_dialog("operation_failed")
-
-    @intent_handler("remove_user.intent")
-    def handle_remove_user(self, message: Message):
-        """
-        Handle removing an existing user, only if the active user is the admin
-        """
-        if self.active_user != self.admin_user:
-            self.speak_dialog("admin_only")
-            return
-
-        user = self.get_response("get_user_name_to_remove")
-
-        if user in self.entrance_codes:
-            del self.settings["entrance_codes"][user]
-            self.speak_dialog("user_removed", {"user": user})
-        else:
-            self.speak_dialog("user_not_found", {"user": user})
-
-    @intent_handler("login_user.intent")
-    def handle_login_user(self, message: Message):
-        """
-        Handle user login
-        """
-        self.authenticate_user()
-
-    @intent_handler("logout_user.intent")
-    def handle_logout_user(self, message: Message):
-        """
-        Handle logging out the current user
-        """
-        self.active_user = ""
-        self.speak_dialog("user_logged_out")
 
     def authenticate_user(self):
         user_code = self.get_response("entrance_code")
@@ -211,7 +162,8 @@ class BootFinishedSkill(OVOSSkill):
         """
         Handle a request to shutdown the system
         """
-        self.speak_dialog("Attempting to shutdown the voice changer.")
+        self.speak_dialog("System shutting down... Goodbye!")
+        sleep(5)
         try:
             response = requests.post("http://192.168.0.238:8000/shutdown", timeout=3)
             response.raise_for_status()
@@ -219,6 +171,5 @@ class BootFinishedSkill(OVOSSkill):
             self.speak_dialog(message["message"])
         except:
             self.speak_dialog("Could not turn off the voice changer")
-
-        self.speak_dialog("System shutting down... Goodbye!")
+        sleep(5)
         self.bus.emit(Message("system.shutdown"))
