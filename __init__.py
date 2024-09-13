@@ -111,6 +111,7 @@ class BootFinishedSkill(OVOSSkill):
             self.speak_dialog(
                 "Turning on the phone."
             )  # Vocal response for starting the phone
+            sleep(5)
             os.system("bash /home/ovos/phone-scripts/phone-restart")
         except:
             self.speak_dialog("Could not turn on the phone")
