@@ -1,0 +1,2 @@
+[ovos.plugin.skill]
+skill-mainnframe-entrance-code.xsqrdlabsadmin = skill_mainnframe_entrance_code:BootFinishedSkill
