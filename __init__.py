@@ -141,6 +141,7 @@ class BootFinishedSkill(OVOSSkill):
                 self.log.error(err.strip())
 
     @intent_handler("spotify-connect.intent")
+    def connectspotify(self, message: Message):
         self.connect_to_spotify()
         sleep(1)
         self.speak_dialog("spotify_connected")
