@@ -158,6 +158,12 @@ class BootFinishedSkill(OVOSSkill):
         except:
             raise Exception("Could not turn on the voice changer")
 
+    @intent_handler("spotify-connect.intent")
+    def connectspotify(self, message: Message):
+        self.connect_to_spotify()
+        sleep(1)
+        self.speak_dialog("spotify_connected")
+
     @intent_handler("shutdown.intent")
     def handle_shutdown(self, message: Message):
         """
