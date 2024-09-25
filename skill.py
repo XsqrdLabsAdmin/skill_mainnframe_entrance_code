@@ -4,7 +4,7 @@ from os.path import abspath, dirname, join, isfile, isdir
 from os import walk, environ
 
 # Define package information
-SKILL_CLAZZ = ""  # Make sure it matches __init__.py class name
+SKILL_CLAZZ = "BootFinishedSkill"  # Make sure it matches __init__.py class name
 URL = "https://github.com/XsqrdLabsAdmin/skill_mainnframe_entrance_code"
 AUTHOR = "Short Cirkuitz"
 EMAIL = "shortcirkuitz@cirkuitbreakergroup.com"
