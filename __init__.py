@@ -75,6 +75,14 @@ class BootFinishedSkill(OVOSSkill):
         self.settings["speak_ready"] = False
         self.speak_dialog("confirm_no_speak_ready")
 
+    def is_api_available(self, url, timeout=3):
+        try:
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()
+            return True
+        except requests.exceptions.RequestException:
+            return False
+
     def authenticate_user(self):
         user_code = self.get_response("entrance_code")
 
@@ -87,10 +95,14 @@ class BootFinishedSkill(OVOSSkill):
                         self.phone_on()
                     except:
                         print("Could not turn on the phone")
-                    try:
-                        self.voice_on()
-                    except:
-                        self.speak_dialog("Could not turn on the voice changer")
+                    
+                    if self.is_api_available("http://192.168.0.238:8000/start"):
+                        try:
+                            self.voice_on()
+                        except:
+                            self.speak_dialog("Could not turn on the voice changer")
+                    else:
+                        self.log.warning("API unavailable, skipping voice_on")
 
                     try:
                         self.connect_to_spotify()
